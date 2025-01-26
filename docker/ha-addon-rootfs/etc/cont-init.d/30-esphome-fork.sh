@@ -18,6 +18,8 @@ if bashio::config.has_value 'esphome_fork'; then
   else
     bashio::exit.nok "Invalid esphome_fork format: $esphome_fork"
   fi
+  bashio::log.info "Install pipx"
+  apt install pipx
   full_url="https://github.com/${username}/${repository}/archive/${ref}.tar.gz"
   bashio::log.info "Checking forked ESPHome"
   dev_version=$(python3 -c "from esphome.const import __version__; print(__version__)")
@@ -29,7 +31,6 @@ if bashio::config.has_value 'esphome_fork'; then
   mkdir /esphome
   tar -zxf /tmp/esphome.tar.gz -C /esphome --strip-components=1 ||
     bashio::exit.nok "Failed installing ESPHome from fork."
-  apt install pipx  
   pipx install --break-system-packages -U -e /esphome || bashio::exit.nok "Failed installing ESPHome from fork."
   rm -f /tmp/esphome.tar.gz
   fork_version=$(python3 -c "from esphome.const import __version__; print(__version__)")
